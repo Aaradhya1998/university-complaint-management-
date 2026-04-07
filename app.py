@@ -3,8 +3,7 @@ from werkzeug.utils import secure_filename
 import os
 import random
 import string
-import matplotlib
-matplotlib.use('Agg')
+
 
 # ---------------- DATABASE ----------------
 from database import (
@@ -175,7 +174,7 @@ def track_complaint():
 
 @app.route('/admin_dashboard')
 def admin_dashboard():
-    # generate_graphs()  ← disable for Render
+   
 
     selected_category = request.args.get('category', '').strip()
     selected_status = request.args.get('status', '').strip()
