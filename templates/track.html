@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Track Complaint</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/form.css') }}">
+</head>
+<body>
+
+<header class="portal-header">
+    <h1>JSPM University</h1>
+    <p>Track Your Complaint</p>
+</header>
+
+<div class="form-container">
+    <div class="form-card">
+
+        <h2>Track Complaint</h2>
+
+        <!-- Flash -->
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="error-box">{{ messages[0] }}</div>
+            {% endif %}
+        {% endwith %}
+
+        <form method="POST">
+            <label>Enter Complaint ID</label>
+            <input type="number" name="complaint_id" required>
+
+            <button type="submit">Check Status</button>
+        </form>
+
+        {% if complaint %}
+        <div class="result-card">
+            <h3>Complaint Details</h3>
+
+            <p><strong>ID:</strong> {{ complaint.id }}</p>
+            <p><strong>Email:</strong> {{ complaint.email }}</p>
+            <p><strong>Category:</strong> {{ complaint.category }}</p>
+            <p><strong>Description:</strong> {{ complaint.description }}</p>
+            <p><strong>Status:</strong> 
+                <span class="{{ 'status-resolved' if complaint.status == 'Resolved' else 'status-pending' }}">
+                    {{ complaint.status }}
+                </span>
+            </p>
+            <p><strong>Created At:</strong> {{ complaint.created_at }}</p>
+            <span id="ticketId">{{ complaint.ticket_id }}</span>
+            <button onclick="copyTicket()">Copy</button>
+        </div>
+        {% endif %}
+
+    </div>
+</div>
+
+</body>
+</html>

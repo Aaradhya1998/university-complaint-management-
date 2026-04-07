@@ -1,0 +1,174 @@
+:root {
+    --primary: #111827;        /* deep navy */
+    --accent: #b91c1c;         /* elegant red */
+    --accent-light: #dc2626;
+    --bg: #f9fafb;
+    --text: #1f2937;
+    --card: #ffffff;
+    --border: #e5e7eb;
+}
+
+
+
+/* BASE */
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: var(--bg);  
+    transition: background 0.3s, color 0.3s;
+}
+/* NAVBAR (Prestige look) */
+.navbar {
+    background: var(--primary);
+    color: white;
+    padding: 16px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 3px solid var(--accent);
+}
+
+.navbar h2 {
+    margin: 0;
+    letter-spacing: 0.5px;
+}
+
+.navbar a {
+    color: #e5e7eb;
+    margin-left: 18px;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.navbar a:hover {
+    color: white;
+}
+
+/* CONTAINER */
+.container {
+    padding: 30px;
+}
+
+/* FILTER CARD */
+.filters {
+    background: var(--card);
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 25px;
+    border: 1px solid var(--border);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+}
+
+/* INPUTS */
+select {
+    padding: 10px;
+    margin-right: 10px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+}
+
+/* BUTTON (RED ACCENT) */
+button {
+    background: var(--accent);
+    color: white;
+    padding: 8px 14px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+button:hover {
+    background: var(--accent-light);
+}
+
+/* TABLE */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--card);
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+}
+
+th {
+    background: var(--primary);
+    color: white;
+    font-weight: 600;
+}
+
+th, td {
+    padding: 12px;
+}
+
+tr {
+    border-bottom: 1px solid var(--border);
+}
+
+/* STATUS ROWS (SUBTLE, NOT LOUD) */
+.resolved {
+    background: rgba(34,197,94,0.08);
+}
+
+.not-resolved {
+    background: rgba(185,28,28,0.08);
+}
+
+/* HOVER */
+tr:hover {
+    background: rgba(0,0,0,0.03);
+}
+
+/* GRAPH */
+.graphs img {
+    width: 45%;
+    margin-top: 20px;
+    border-radius: 10px;
+}
+
+/* DARK MODE TABLE FIX */
+body.dark th {
+    background: #020617;
+}
+/* GRAPH SECTION */
+.graphs-section {
+    margin-top: 40px;
+}
+
+.graphs-section h2 {
+    margin-bottom: 20px;
+}
+
+/* GRID */
+.graph-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+/* CARD */
+.graph-card {
+    background: white;
+    padding: 15px;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.05);
+    text-align: center;
+}
+
+.graph-card h3 {
+    margin-bottom: 10px;
+    font-size: 16px;
+    color: #111827;
+}
+
+/* IMAGE */
+.graph-card img {
+    width: 100%;
+    border-radius: 8px;
+}
+.graph-card:hover {
+    transform: translateY(-3px);
+    transition: 0.2s;
+}

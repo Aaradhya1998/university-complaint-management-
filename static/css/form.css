@@ -1,0 +1,177 @@
+/* BACKGROUND */
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #020617, #1e293b);
+}
+.portal-header {
+    background: #111827;
+    color: white;
+    text-align: center;
+    padding: 20px 10px;
+    border-bottom: 4px solid #b91c1c;
+}
+
+.portal-header h1 {
+    margin: 0;
+    font-size: 24px;
+}
+
+.portal-header p {
+    margin: 5px 0 0;
+    font-size: 14px;
+    color: #d1d5db;
+}
+/* CENTER */
+.form-container {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+/* CARD */
+.form-card {
+    background: white;
+    padding: 30px;
+    border-radius: 14px;
+    width: 100%;
+    max-width: 500px;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.25);
+}
+input, select, textarea {
+    width: 100%;
+    padding: 12px;
+    margin-top: 6px;
+    border-radius: 8px;
+    border: 2px solid #e5e7eb;
+    font-size: 14px;
+    background: #fafafa;
+    transition: 0.2s;
+}
+
+/* FOCUS = Highlight */
+input:focus, select:focus, textarea:focus {
+    border-color: #b91c1c;
+    background: #fff;
+    box-shadow: 0 0 0 2px rgba(185, 28, 28, 0.1);
+    outline: #020617;
+}
+.success-box {
+    background: #ecfdf5;
+    color: #065f46;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    border: 1px solid #10b981;
+    font-size: 14px;
+}
+label {
+    display: block;
+    margin-top: 14px;
+    font-size: 18px;
+    font-weight: 650;
+    color: #010102;
+}
+/* TITLE */
+.form-card h2 {
+    margin-bottom: 5px;
+}
+
+.subtitle {
+    font-size: 14px;
+    color: #6b7280;
+    margin-bottom: 20px;
+}
+
+/* LABEL */
+label {
+    display: block;
+    margin-top: 12px;
+    font-size: 13px;
+    color: #374151;
+}
+
+/* INPUTS */
+input, select, textarea {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border-radius: 6px;
+    border: 1px solid #d1d5db;
+    font-size: 14px;
+}
+
+textarea {
+    resize: none;
+}
+
+/* FOCUS */
+input:focus, select:focus, textarea:focus {
+    border-color: #b91c1c;
+    outline: none;
+}
+
+/* BUTTON */
+button {
+    margin-top: 20px;
+    width: 100%;
+    padding: 12px;
+    background: #b91c1c;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #991b1b;
+}
+
+/* MOBILE */
+@media (max-width: 480px) {
+    .form-card {
+        padding: 20px;
+    }
+}
+.error-box {
+    background: #fee2e2;
+    color: #991b1b;
+    padding: 10px;
+    border-radius: 6px;
+    margin-bottom: 15px;
+}
+
+.result-card {
+    margin-top: 20px;
+    padding: 15px;
+    border-radius: 10px;
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+}
+
+.status-resolved {
+    color: #16a34a;
+    font-weight: 600;
+}
+
+.status-pending {
+    color: #dc2626;
+    font-weight: 600;
+}
+\.copy-btn {
+    margin-left: 10px;
+    padding: 5px 10px;
+    font-size: 12px;
+    border: none;
+    border-radius: 6px;
+    background: #111827;
+    color: white;
+    cursor: pointer;
+}
+
+.copy-btn:hover {
+    background: #374151;
+}

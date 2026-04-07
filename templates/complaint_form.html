@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+    
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Submit Complaint</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/form.css') }}">
+</head>
+
+<body>
+<header class="portal-header">
+    <h1>JSPM University</h1>
+    <p>Complaint Management Portal</p>
+</header>
+{% with messages = get_flashed_messages() %}
+    {% if messages %}
+        <div class="success-box">
+            ✅ Complaint submitted successfully!  
+            Ticket ID: 
+            <span class="complaint-id" id="ticketId">{{ messages[0] }}</span>
+
+            <button onclick="copyTicket()" class="copy-btn">Copy</button>
+        </div>
+    {% endif %}
+{% endwith %}
+<div class="form-container">
+    <div class="form-card">
+
+        <h2>Submit Complaint</h2>
+        <p class="subtitle">Report issues within the university</p>
+
+        <form method="POST" action="/submit_complaint" enctype="multipart/form-data">
+
+            <label>Name (optional)</label>
+            <input type="text" name="name" placeholder="Your name">
+
+            <label>PRN / Faculty ID</label>
+            <input type="text" name="prn_or_faculty_id" required>
+
+            <label>Category</label>
+            <select name="category" required>
+                <option value="">Select a category</option>
+                {% for cat in categories %}
+                    <option value="{{ cat }}">{{ cat }}</option>
+                {% endfor %}
+            </select>
+
+            <label>Complaint Description</label>
+            <textarea name="description" rows="4" required></textarea>
+
+            <label>Upload Image (optional)</label>
+            <input type="file" name="image">
+
+            <button type="submit">Submit Complaint</button>
+
+        </form>
+
+    </div>
+</div>
+<script>
+function copyTicket() {
+    const text = document.getElementById("ticketId").innerText;
+
+    navigator.clipboard.writeText(text)
+        .then(() => {
+            const btn = document.querySelector(".copy-btn");
+            if (btn) {
+                btn.innerText = "Copied!";
+                setTimeout(() => btn.innerText = "Copy", 1500);
+            }
+        })
+        .catch(() => {
+            // fallback (older browsers)
+            const tempInput = document.createElement("input");
+            tempInput.value = text;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            document.execCommand("copy");
+            document.body.removeChild(tempInput);
+            alert("Copied: " + text);
+        });
+}
+</script>
+</body>
+</html>
