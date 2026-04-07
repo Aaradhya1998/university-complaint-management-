@@ -175,7 +175,7 @@ def track_complaint():
 
 @app.route('/admin_dashboard')
 def admin_dashboard():
-    generate_graphs()
+    # generate_graphs()  ← disable for Render
 
     selected_category = request.args.get('category', '').strip()
     selected_status = request.args.get('status', '').strip()
@@ -194,61 +194,6 @@ def admin_dashboard():
         selected_category=selected_category,
         selected_status=selected_status,
     )
-
-
-@app.route('/mark_resolved/<int:complaint_id>', methods=['POST'])
-def mark_resolved(complaint_id):
-    complaint = get_complaint_by_id(complaint_id)
-
-    if complaint is None:
-        flash('Complaint not found.')
-    elif mark_complaint_resolved(complaint_id):
-        flash('Complaint marked as resolved!')
-    else:
-        flash('Unable to update complaint status.')
-
-    return redirect(url_for('admin_dashboard'))
-
-
-# ---------------- GRAPHS ----------------
-
-def generate_graphs():
-    import matplotlib.pyplot as plt
-
-    graph_dir = os.path.join(app.static_folder, 'graphs')
-    os.makedirs(graph_dir, exist_ok=True)
-
-    category_counts = get_category_counts()
-    categories = [item[0] for item in category_counts]
-    counts = [item[1] for item in category_counts]
-
-    plt.figure(figsize=(10, 6))
-
-    if categories:
-        plt.bar(categories, counts)
-        plt.xticks(rotation=30)
-    else:
-        plt.text(0.5, 0.5, 'No complaints yet', ha='center')
-
-    plt.tight_layout()
-    plt.savefig(os.path.join(graph_dir, 'category_distribution.png'))
-    plt.close()
-
-    resolved_count, not_resolved_count = get_status_counts()
-
-    plt.figure(figsize=(7, 7))
-
-    if resolved_count + not_resolved_count > 0:
-        plt.pie(
-            [resolved_count, not_resolved_count],
-            labels=['Resolved', 'Not Resolved'],
-            autopct='%1.1f%%'
-        )
-    else:
-        plt.text(0.5, 0.5, 'No complaints yet', ha='center')
-
-    plt.savefig(os.path.join(graph_dir, 'resolved_vs_not_resolved.png'))
-    plt.close()
 
 
 # ---------------- RUN ----------------
