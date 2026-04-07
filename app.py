@@ -6,9 +6,7 @@ import string
 import matplotlib
 matplotlib.use('Agg')
 
-
-
-# Database
+# ---------------- DATABASE ----------------
 from database import (
     get_categories,
     get_category_counts,
@@ -21,6 +19,7 @@ from database import (
     get_complaint_by_id
 )
 
+# ---------------- ENV ----------------
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -29,7 +28,7 @@ app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev_secret_key')
 
 init_database(app)
 
-# ---------------- OTP FUNCTION ----------------
+# ---------------- SMTP OTP FUNCTION ----------------
 import smtplib
 from email.mime.text import MIMEText
 
@@ -38,13 +37,22 @@ def send_otp(email, otp):
         sender = os.environ.get("MAIL_USERNAME")
         password = os.environ.get("MAIL_PASSWORD")
 
+        if not sender or not password:
+            print("SMTP ERROR: Missing MAIL_USERNAME or MAIL_PASSWORD")
+            return False
+
         msg = MIMEText(f"Your OTP is {otp}")
         msg["Subject"] = "Your OTP Code"
         msg["From"] = sender
         msg["To"] = email
 
+        print("Connecting to SMTP...")
+
         server = smtplib.SMTP_SSL("smtp.gmail.com", 465)
         server.login(sender, password)
+
+        print("SMTP Login successful")
+
         server.send_message(msg)
         server.quit()
 
@@ -54,6 +62,7 @@ def send_otp(email, otp):
     except Exception as e:
         print("SMTP ERROR:", e)
         return False
+
 
 # ---------------- ROUTES ----------------
 
@@ -90,6 +99,7 @@ def login():
 @app.route('/verify_otp', methods=['POST'])
 def verify_otp():
     entered_otp = request.form['otp']
+
     if entered_otp == session.get('otp'):
         return redirect(url_for('user_dashboard'))
     else:
@@ -123,12 +133,15 @@ def submit_complaint():
     description = request.form['description']
 
     image_path = None
+
     if 'image' in request.files:
         image = request.files['image']
         if image and image.filename:
             filename = secure_filename(image.filename)
+
             upload_dir = os.path.join(app.static_folder, 'uploads')
             os.makedirs(upload_dir, exist_ok=True)
+
             image.save(os.path.join(upload_dir, filename))
             image_path = filename
 
@@ -150,6 +163,7 @@ def track_complaint():
 
     if request.method == 'POST':
         ticket_id = request.form.get('complaint_id')
+
         if ticket_id:
             complaint = get_complaint_by_ticket(ticket_id.strip())
 
@@ -185,12 +199,14 @@ def admin_dashboard():
 @app.route('/mark_resolved/<int:complaint_id>', methods=['POST'])
 def mark_resolved(complaint_id):
     complaint = get_complaint_by_id(complaint_id)
+
     if complaint is None:
         flash('Complaint not found.')
     elif mark_complaint_resolved(complaint_id):
         flash('Complaint marked as resolved!')
     else:
         flash('Unable to update complaint status.')
+
     return redirect(url_for('admin_dashboard'))
 
 
@@ -207,6 +223,7 @@ def generate_graphs():
     counts = [item[1] for item in category_counts]
 
     plt.figure(figsize=(10, 6))
+
     if categories:
         plt.bar(categories, counts)
         plt.xticks(rotation=30)
@@ -220,6 +237,7 @@ def generate_graphs():
     resolved_count, not_resolved_count = get_status_counts()
 
     plt.figure(figsize=(7, 7))
+
     if resolved_count + not_resolved_count > 0:
         plt.pie(
             [resolved_count, not_resolved_count],
@@ -233,6 +251,8 @@ def generate_graphs():
     plt.close()
 
 
+# ---------------- RUN ----------------
+
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port)
+    app.run(host="0.0.0.0", port=port, debug=True)
