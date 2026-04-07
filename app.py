@@ -6,9 +6,7 @@ import string
 import matplotlib
 matplotlib.use('Agg')
 
-# SendGrid
-from sendgrid import SendGridAPIClient
-from sendgrid.helpers.mail import Mail as SendGridMail
+
 
 # Database
 from database import (
@@ -32,25 +30,30 @@ app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev_secret_key')
 init_database(app)
 
 # ---------------- OTP FUNCTION ----------------
+import smtplib
+from email.mime.text import MIMEText
+
 def send_otp(email, otp):
     try:
-        message = SendGridMail(
-            from_email='devself200@gmail.com',  
-            to_emails=email,
-            subject='Your OTP Code',
-            html_content=f'<strong>Your OTP is {otp}</strong>'
-        )
+        sender = os.environ.get("MAIL_USERNAME")
+        password = os.environ.get("MAIL_PASSWORD")
 
-        sg = SendGridAPIClient(os.environ.get('SENDGRID_API_KEY'))
-        response = sg.send(message)
+        msg = MIMEText(f"Your OTP is {otp}")
+        msg["Subject"] = "Your OTP Code"
+        msg["From"] = sender
+        msg["To"] = email
 
-        print("SendGrid Status:", response.status_code)
+        server = smtplib.SMTP_SSL("smtp.gmail.com", 465)
+        server.login(sender, password)
+        server.send_message(msg)
+        server.quit()
+
+        print("SMTP: Email sent successfully")
         return True
 
     except Exception as e:
-        print("SendGrid ERROR:", e)
+        print("SMTP ERROR:", e)
         return False
-
 
 # ---------------- ROUTES ----------------
 
