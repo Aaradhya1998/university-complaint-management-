@@ -85,10 +85,14 @@ def login():
 
         print("Generated OTP:", otp)
 
-        if send_otp(email, otp):
-            return render_template('otp_verify.html')
-        else:
-            return "Failed to send OTP", 500
+        import threading
+        threading.Thread(target=send_otp, args=(email, otp)).start()
+
+        return render_template('otp_verify.html')
+
+    except Exception as e:
+        print("LOGIN ERROR:", e)
+        return f"Error: {e}", 500
 
     except Exception as e:
         print("LOGIN ERROR:", e)
