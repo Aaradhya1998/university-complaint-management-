@@ -3,89 +3,99 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - University Complaint Management System</title>
+    <title>Admin Dashboard</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
 </head>
 <body>
-    {% include 'layout.html' %}
-    <div class="container">
-        
-        <h1 style="margin-bottom:10px;">Admin Dashboard</h1>
-        <p style="color:rgb(110, 31, 31); margin-top:0;">
-            Manage and monitor all university complaints efficiently.
-        </p>
-        <div class="filters">
-            <form method="GET" action="{{ url_for('admin_dashboard') }}">
-                <select name="category">
-                    <option value="">All Categories</option>
-                    {% for category in categories %}
-                        <option value="{{ category }}" {% if category == selected_category %}selected{% endif %}>{{ category }}</option>
-                    {% endfor %}
-                </select>
-                <select name="status">
-                    <option value="">All Statuses</option>
-                    <option value="Not Resolved" {% if selected_status == 'Not Resolved' %}selected{% endif %}>Not Resolved</option>
-                    <option value="Resolved" {% if selected_status == 'Resolved' %}selected{% endif %}>Resolved</option>
-                </select>
-                <button type="submit">Filter</button>
-            </form>
-        </div>
-        <table>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Email</th>
-                    <th>PRN/Faculty ID</th>
-                    <th>Category</th>
-                    <th>Description</th>
-                    <th>Image</th>
-                    <th>Status</th>
-                    <th>Created At</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for complaint in complaints %}
-                    <tr class="{{ 'resolved' if complaint.status == 'Resolved' else 'not-resolved' }}">
-                        <td>{{ complaint.id }}</td>
-                        <td>{{ complaint.email }}</td>
-                        <td>{{ complaint.prn_or_faculty_id }}</td>
-                        <td>{{ complaint.category }}</td>
-                        <td>{{ complaint.description }}</td>
-                        <td>
-                            {% if complaint.image_path %}
-                                {% if complaint.image_path.startswith('uploads/') %}
-                                    <img src="{{ url_for('static', filename=complaint.image_path) }}" alt="Complaint Image" width="50">
-                                {% elif complaint.image_path.startswith('static/uploads/') %}
-                                    <img src="{{ url_for('static', filename=complaint.image_path.replace('static/', '', 1)) }}" alt="Complaint Image" width="50">
-                                {% else %}
-                                    <img src="{{ url_for('static', filename='uploads/' + complaint.image_path) }}" alt="Complaint Image" width="50">
-                                {% endif %}
-                            {% endif %}
-                        </td>
-                        <td>{{ complaint.status }}</td>
-                        <td>{{ complaint.created_at }}</td>
-                        <td>
-                            {% if complaint.status == 'Not Resolved' %}
-                                <form method="POST" action="{{ url_for('mark_resolved', complaint_id=complaint.id) }}">
-                                    <button type="submit">Mark as Resolved</button>
-                                </form>
-                            {% endif %}
-                        </td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
 
-    
-</div>
+<div class="container">
+
+    <h1>Admin Dashboard</h1>
+    <p style="color:#666;">Manage and monitor complaints</p>
+
+    <!-- 🔥 FILTER -->
+    <div class="filters">
+        <form method="GET" action="{{ url_for('admin_dashboard') }}">
+            <select name="category">
+                <option value="">All Categories</option>
+                {% for category in categories %}
+                    <option value="{{ category }}" {% if category == selected_category %}selected{% endif %}>
+                        {{ category }}
+                    </option>
+                {% endfor %}
+            </select>
+
+            <select name="status">
+                <option value="">All Status</option>
+                <option value="Not Resolved" {% if selected_status == 'Not Resolved' %}selected{% endif %}>Not Resolved</option>
+                <option value="Resolved" {% if selected_status == 'Resolved' %}selected{% endif %}>Resolved</option>
+            </select>
+
+            <button type="submit">Filter</button>
+        </form>
     </div>
 
+    <!-- 🔥 TABLE -->
+    {% if complaints %}
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Email</th>
+                <th>ID</th>
+                <th>Category</th>
+                <th>Description</th>
+                <th>Image</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+
+        <tbody>
+        {% for complaint in complaints %}
+            <tr>
+                <td>{{ complaint.id }}</td>
+                <td>{{ complaint.email }}</td>
+                <td>{{ complaint.prn_or_faculty_id }}</td>
+                <td>{{ complaint.category }}</td>
+                <td>{{ complaint.description }}</td>
+
+                <td>
+                    {% if complaint.image_path %}
+                        <img src="{{ url_for('static', filename='uploads/' + complaint.image_path) }}" width="50">
+                    {% else %}
+                        No Image
+                    {% endif %}
+                </td>
+
+                <td>{{ complaint.status }}</td>
+
+                <td>
+                    {% if complaint.status == 'Not Resolved' %}
+                        <form method="POST" action="{{ url_for('mark_resolved', complaint_id=complaint.id) }}">
+                            <button type="submit">Resolve</button>
+                        </form>
+                    {% else %}
+                        ✔
+                    {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    {% else %}
+        <p style="margin-top:20px;">No complaints found.</p>
+    {% endif %}
+
+    <!-- 🔥 BACK BUTTON -->
+    <div style="margin-top:20px;">
+        <a href="{{ url_for('home') }}">
+            <button>Back to Login</button>
+        </a>
+    </div>
+
+</div>
 
 </body>
-<footer>
-        <p>&copy; {{ current_year }} JSPM University Pune. All rights reserved.</p>
-        <p>Designed and Developed by [Amit Patil]</p>
-    </footer>
-
 </html>

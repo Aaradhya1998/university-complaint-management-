@@ -4,101 +4,62 @@ import os
 import random
 import string
 
-
 # ---------------- DATABASE ----------------
 from database import (
     get_categories,
-    get_category_counts,
     get_complaint_by_ticket,
     get_complaints,
-    get_status_counts,
     init_app as init_database,
     insert_complaint,
     mark_complaint_resolved,
     get_complaint_by_id
 )
 
-# ---------------- ENV ----------------
 from dotenv import load_dotenv
 load_dotenv()
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev_secret_key')
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'fixed_secret_key_123')
 
 init_database(app)
 
-# ---------------- SMTP OTP FUNCTION ----------------
-import smtplib
-from email.mime.text import MIMEText
-
-def send_otp(email, otp):
-    try:
-        sender = os.environ.get("MAIL_USERNAME")
-        password = os.environ.get("MAIL_PASSWORD")
-
-        if not sender or not password:
-            print("SMTP ERROR: Missing MAIL_USERNAME or MAIL_PASSWORD")
-            return False
-
-        msg = MIMEText(f"Your OTP is {otp}")
-        msg["Subject"] = "Your OTP Code"
-        msg["From"] = sender
-        msg["To"] = email
-
-        print("Connecting to SMTP (TLS)...")
-
-        server = smtplib.SMTP("smtp.gmail.com", 587)
-        server.starttls()
-        server.login(sender, password)
-
-        print("SMTP Login successful")
-
-        result = server.send_message(msg)
-        print("SEND RESULT:", result)
-
-        server.quit()
-
-        print("SMTP: Email sent successfully")
-        return True
-
-    except Exception as e:
-        print("SMTP ERROR:", e)
-        return False
-
-# ---------------- ROUTES ----------------
-
+# ---------------- HOME ----------------
 @app.route('/')
 def home():
     return render_template('login.html')
 
-
+# ---------------- LOGIN (UI OTP) ----------------
 @app.route('/login', methods=['POST'])
 def login():
     try:
-        print("LOGIN HIT")
-
         email = request.form.get('email')
+
         if not email:
             return "Email required", 400
 
         otp = ''.join(random.choices(string.digits, k=6))
+
         session['otp'] = otp
         session['email'] = email
 
         print("Generated OTP:", otp)
 
-        # 🔥 SHOW OTP IN UI (DEMO MODE)
+        # 🔥 Show OTP in UI (Demo Mode)
         flash(f"Your OTP is: {otp}")
 
         return render_template('otp_verify.html')
 
     except Exception as e:
         print("LOGIN ERROR:", e)
-        return f"Error: {e}", 500
+        return "Login error", 500
 
+# ---------------- VERIFY OTP ----------------
 @app.route('/verify_otp', methods=['POST'])
 def verify_otp():
-    entered_otp = request.form['otp']
+    entered_otp = request.form.get('otp', '').strip()
+
+    print("SESSION OTP:", session.get('otp'))
+    print("ENTERED OTP:", entered_otp)
 
     if entered_otp == session.get('otp'):
         return redirect(url_for('user_dashboard'))
@@ -106,14 +67,12 @@ def verify_otp():
         flash('Invalid OTP. Please try again.')
         return redirect(url_for('home'))
 
-
+# ---------------- USER DASHBOARD ----------------
 @app.route('/dashboard')
 def user_dashboard():
-    if 'email' not in session:
-        return redirect(url_for('home'))
     return render_template('dashboard.html')
 
-
+# ---------------- COMPLAINT FORM ----------------
 @app.route('/complaint_form')
 def complaint_form():
     categories = [
@@ -123,7 +82,7 @@ def complaint_form():
     ]
     return render_template('complaint_form.html', categories=categories)
 
-
+# ---------------- SUBMIT COMPLAINT ----------------
 @app.route('/submit_complaint', methods=['POST'])
 def submit_complaint():
     email = session.get('email')
@@ -156,7 +115,7 @@ def submit_complaint():
     flash(f"Complaint submitted! Ticket ID: {ticket_id}")
     return redirect(url_for('complaint_form'))
 
-
+# ---------------- TRACK COMPLAINT ----------------
 @app.route('/track', methods=['GET', 'POST'])
 def track_complaint():
     complaint = None
@@ -172,32 +131,52 @@ def track_complaint():
 
     return render_template('track.html', complaint=complaint)
 
-
+# ---------------- ADMIN DASHBOARD ----------------
 @app.route('/admin_dashboard')
 def admin_dashboard():
-   
+    try:
+        selected_category = request.args.get('category', '').strip()
+        selected_status = request.args.get('status', '').strip()
 
-    selected_category = request.args.get('category', '').strip()
-    selected_status = request.args.get('status', '').strip()
+        complaints = get_complaints(
+            category=selected_category or None,
+            status=selected_status or None,
+        )
 
-    complaints = get_complaints(
-        category=selected_category or None,
-        status=selected_status or None,
-    )
+        categories = get_categories()
 
-    categories = get_categories()
+        return render_template(
+            'admin_dashboard.html',
+            complaints=complaints,
+            categories=categories,
+            selected_category=selected_category,
+            selected_status=selected_status,
+        )
 
-    return render_template(
-        'admin_dashboard.html',
-        complaints=complaints,
-        categories=categories,
-        selected_category=selected_category,
-        selected_status=selected_status,
-    )
+    except Exception as e:
+        print("ADMIN ERROR:", e)
+        return "Admin dashboard error", 500
 
+# ---------------- DIRECT ADMIN ROUTE ----------------
+@app.route('/admin')
+def go_admin():
+    return redirect(url_for('admin_dashboard'))
+
+# ---------------- MARK RESOLVED ----------------
+@app.route('/mark_resolved/<int:complaint_id>', methods=['POST'])
+def mark_resolved(complaint_id):
+    complaint = get_complaint_by_id(complaint_id)
+
+    if complaint is None:
+        flash('Complaint not found.')
+    elif mark_complaint_resolved(complaint_id):
+        flash('Complaint marked as resolved!')
+    else:
+        flash('Unable to update complaint status.')
+
+    return redirect(url_for('admin_dashboard'))
 
 # ---------------- RUN ----------------
-
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port, debug=True)

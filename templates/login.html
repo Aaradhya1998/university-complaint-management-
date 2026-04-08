@@ -13,11 +13,31 @@
         <h2>JSPM University</h2>
         <p class="subtitle">Complaint Management System</p>
 
-        <form method="POST" action="/login">
-            <input type="email" name="email" placeholder="Enter your email" required>
+        <!-- 🔥 FLASH MESSAGES (OTP + ERRORS) -->
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            <div style="background:#1e1e1e; color:#00ffcc; padding:10px; margin-bottom:15px; border-radius:6px;">
+              {% for message in messages %}
+                <p>{{ message }}</p>
+              {% endfor %}
+            </div>
+          {% endif %}
+        {% endwith %}
 
+        <form method="POST" action="{{ url_for('login') }}">
+            <input type="email" name="email" placeholder="Enter your email" required>
             <button type="submit">Send OTP</button>
         </form>
+
+        <!-- 🔥 ADMIN ACCESS BUTTON -->
+        <div style="margin-top:15px;">
+            <a href="{{ url_for('go_admin') }}">
+                <button style="background:#ff4d4d; color:white; border:none; padding:8px 12px; border-radius:5px; cursor:pointer;">
+                    Admin Dashboard
+                </button>
+            </a>
+        </div>
+
     </div>
 </div>
 
