@@ -87,19 +87,14 @@ def login():
 
         print("Generated OTP:", otp)
 
-        import threading
-        threading.Thread(target=send_otp, args=(email, otp)).start()
+        # 🔥 SHOW OTP IN UI (DEMO MODE)
+        flash(f"Your OTP is: {otp}")
 
         return render_template('otp_verify.html')
 
     except Exception as e:
         print("LOGIN ERROR:", e)
         return f"Error: {e}", 500
-
-    except Exception as e:
-        print("LOGIN ERROR:", e)
-        return f"Error: {e}", 500
-
 
 @app.route('/verify_otp', methods=['POST'])
 def verify_otp():
