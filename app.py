@@ -45,14 +45,17 @@ def send_otp(email, otp):
         msg["From"] = sender
         msg["To"] = email
 
-        print("Connecting to SMTP...")
+        print("Connecting to SMTP (TLS)...")
 
-        server = smtplib.SMTP_SSL("smtp.gmail.com", 465)
+        server = smtplib.SMTP("smtp.gmail.com", 587)
+        server.starttls()
         server.login(sender, password)
 
         print("SMTP Login successful")
 
-        server.send_message(msg)
+        result = server.send_message(msg)
+        print("SEND RESULT:", result)
+
         server.quit()
 
         print("SMTP: Email sent successfully")
@@ -61,7 +64,6 @@ def send_otp(email, otp):
     except Exception as e:
         print("SMTP ERROR:", e)
         return False
-
 
 # ---------------- ROUTES ----------------
 
